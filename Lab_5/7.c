@@ -18,7 +18,7 @@ static char **listdir2;
 static FILE* output_file;
 
 static void full_path(char* path, char* dir_name, char* full_path);
-static char* format_time(char* timestr);
+static char* format_time(const time_t time);
 static char* display_permission(int st_mode);
 static int process_dir(char* dir_name, char** listdir[], int* count);
 static void process_files(char* file1, char* file2);
@@ -74,14 +74,10 @@ void full_path(char* path, char* dir_name, char* full_path) {
   strcat(full_path, dir_name);
 }
 
-char* format_time(char* timestr) {
-	char* buf = (char*)malloc(sizeof(char) * 5);
-	char* result = (char*)malloc(sizeof(char) * 12);
-	strncpy(result, &timestr[4], 7);
-	strncpy(buf, &timestr[20], 4);
-	strcat(result, buf);
-	result[7 + 4] = '\0';
-	free(buf);
+char* format_time(const time_t time) {
+	setlocale(LC_ALL, ""); // Honor the user's locale (https://stackoverflow.com/a/43336650)
+	char* result = (char*)malloc(sizeof(char) * 16);
+	strftime(result, 16, "%b %d %Y", localtime(&time));
 	return result;
 }
 
@@ -178,7 +174,7 @@ void process_files(char* file1, char* file2) {
 			"%s %ld %s %s %ld\n",
 			file1,
 			info.st_size,
-			format_time(ctime(&info.st_ctim.tv_sec)),
+			format_time(info.st_ctim.tv_sec),
 			display_permission(info.st_mode),
 			info.st_ino);
 		fprintf(
@@ -186,7 +182,7 @@ void process_files(char* file1, char* file2) {
 			"%s %ld %s %s %ld\n",
 			file1,
 			info.st_size,
-			format_time(ctime(&info.st_ctim.tv_sec)),
+			format_time(info.st_ctim.tv_sec),
 			display_permission(info.st_mode),
 			info.st_ino);
 
@@ -195,7 +191,7 @@ void process_files(char* file1, char* file2) {
 			"%s %ld %s %s %ld\n\n",
 			file2,
 			info.st_size,
-			format_time(ctime(&info.st_ctim.tv_sec)),
+			format_time(info.st_ctim.tv_sec),
 			display_permission(info.st_mode),
 			info.st_ino);
 		fprintf(
@@ -203,7 +199,7 @@ void process_files(char* file1, char* file2) {
 			"%s %ld %s %s %ld\n\n",
 			file2,
 			info.st_size,
-			format_time(ctime(&info.st_ctim.tv_sec)),
+			format_time(info.st_ctim.tv_sec),
 			display_permission(info.st_mode),
 			info.st_ino);
 
