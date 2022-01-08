@@ -1,21 +1,22 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
-#include <sys/wait.h>
 #include <time.h>
 #include <unistd.h>
 
 void printInfo()
 {
-	printf("PID: %d\n", getpid());
-	printf("PID of parent: %d\n", getppid());
-	
 	struct timeval rawTime;
 	struct timezone timezone;
 	gettimeofday(&rawTime, &timezone);
 	struct tm currentTime = *localtime(&rawTime.tv_sec);
+
 	printf(
+		"PID: %d\n"
+		"PID of parent: %d\n"
 		"Current time: %i:%i:%i:%li\n\n",
+		getpid(),
+		getppid(),
 		currentTime.tm_hour,
 		currentTime.tm_min,
 		currentTime.tm_sec,
@@ -35,10 +36,8 @@ void main()
 			return;
 		
 		printInfo();
-		if (pid > 0) {
-			wait(NULL);
+		if (pid > 0)
 			system("ps -x");
-		}
 	}
 	else
 		printInfo();
