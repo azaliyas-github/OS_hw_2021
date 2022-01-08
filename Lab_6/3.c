@@ -72,7 +72,7 @@ void execute_command(command command) {
 	}
 
 	if (child_pid > 0) {
-		waitpid(child_pid, NULL, 0);
+		// waitpid(child_pid, NULL, 0);
 		return;
 	}
 
